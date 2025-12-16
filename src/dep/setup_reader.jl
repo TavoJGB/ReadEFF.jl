@@ -45,7 +45,7 @@ function postprocess(df_ii::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars
     # eff_tenure!(ii_final)
     
     # Keep only requested variables
-    select!(ii_final, [string.(i_ids); filter(:type => t -> t == "User", ivars).varname])
+    select!(ii_final, [string.(i_ids); "head"; filter(:type => t -> t == "User", ivars).varname])
     select!(hh_final, [string.(h_ids); "wealth" ; filter(:type => t -> t == "User", hvars).varname])
 
     # Weights PROVISIONAL
