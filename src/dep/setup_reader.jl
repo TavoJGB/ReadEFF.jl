@@ -1,6 +1,6 @@
 function preprocess(ivars, hvars)
     # Add variables needed to compute net wealth
-    wealthlist_path = joinpath(BASE_FOLDER, "varlists", "eff_vars_wealth.csv")
+    wealthlist_path = joinpath(BASE_FOLDER, "var_lists", "eff_vars_wealth.csv")
     wealthlist = filter(:varkey => key -> !(key ∈ hvars.varkey), CSV.read(wealthlist_path, DataFrame; comment="#"))
     # Flag auxiliary variables
     ivars.type .= "User"

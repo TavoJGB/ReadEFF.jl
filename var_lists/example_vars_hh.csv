@@ -1,0 +1,8 @@
+varname,varkey,firsttime,lasttime
+
+# Household characteristics
+c_wgt,facine3,2002,2099
+h_size,p1,2002,2099
+
+# Income
+income,renthog,2002,2099
