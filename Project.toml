@@ -11,7 +11,6 @@ DataReader = "a0aff591-8b5e-472e-9d15-fd720d7e0df8"
 [compat]
 CSV = "0.10.15"
 DataFrames = "1.8.1"
-DataReader = "1.0.0"
 julia = "1.6.7"
 
 [extras]

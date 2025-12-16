@@ -2,7 +2,7 @@
 
 julia_version = "1.12.1"
 manifest_format = "2.0"
-project_hash = "360d3190811665961ffc547ae77419166333d0ec"
+project_hash = "641d9217355803897e39c079a6ab0d7aed6ad09e"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -57,7 +57,7 @@ version = "1.8.1"
 
 [[deps.DataReader]]
 deps = ["CSV", "DataFrames"]
-git-tree-sha1 = "6ff6c6cb66e754b615ad8442364e5de825aac427"
+path = "C:\\Users\\gusga\\Documents\\GitHub\\Julia\\DataReader"
 uuid = "a0aff591-8b5e-472e-9d15-fd720d7e0df8"
 version = "1.0.0-DEV"
 
@@ -214,7 +214,7 @@ uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 version = "1.11.0"
 
 [[deps.ReadEFF]]
-deps = ["CSV", "DataReader"]
+deps = ["CSV", "DataFrames", "DataReader"]
 path = "."
 uuid = "71b857e6-b8ff-4f2c-8ecf-4fabc14d1aac"
 version = "1.0.0-DEV"

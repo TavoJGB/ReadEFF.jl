@@ -33,6 +33,7 @@ function postprocess(df_ii::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars
     end
     # - Size of household
     leftjoin!(ii_final, select(hh_final, [h_ids; :h_size]), on=h_ids)
+    # - Remove empty observations
     filter!(row -> row.individual <= row.h_size, ii_final)
     # - Age
     compute_age_if_missing!(ii_final)
