@@ -26,7 +26,8 @@ function postprocess(df_ii::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars
 
     # Additional variables
     # - Head of household
-    ii_final[!, :head] = (ii_final.rel2hh .== 1)
+    head = (ii_final.rel2hh .== 1)
+    ii_final[!, :head] = ifelse.(ismissing.(head), false, head)
     begin # Correction: there are two heads in this household
         ii_final[(ii_final.year.==2022) .& (ii_final.hid.==3671) .& (ii_final.individual.==3), :head] .= false
         ii_final[(ii_final.year.==2022) .& (ii_final.hid.==3671) .& (ii_final.individual.==3), :rel2hh] .= missing
