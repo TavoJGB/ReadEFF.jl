@@ -49,18 +49,18 @@ function postprocess(df_ii::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars
     ii_final[!, :head] = ifelse.(ismissing.(head), false, head)
     begin # Correction: there are two heads in this household
         ii_final[(ii_final.year.==2022) .& (ii_final.hid.==3671) .& (ii_final.individual.==3), :head] .= false
-        ii_final[(ii_final.year.==2022) .& (ii_final.hid.==3671) .& (ii_final.individual.==3), :rel2hh] .= missing
+        # ii_final[(ii_final.year.==2022) .& (ii_final.hid.==3671) .& (ii_final.individual.==3), :rel2hh] .= missing
     end
     # - Individual identifier
     ii_final[!, :id] = ii_final.hid .* 10 .+ ii_final.individual
     # - Net wealth
     compute_net_wealth!(hh_final)
     # - Housing tenure
-    # eff_tenure!(ii_final)
+    eff_tenure!(hh_final)
     
     # Keep only requested variables
     select!(ii_final, [string.(i_ids); "head"; filter(:type => t -> t == "User", ivars).varname])
-    select!(hh_final, [string.(h_ids); "wealth" ; filter(:type => t -> t == "User", hvars).varname])
+    select!(hh_final, [string.(h_ids); "h_tenure"; "wealth" ; filter(:type => t -> t == "User", hvars).varname])
 
     # Weights PROVISIONAL
     rename!(hh_final, :c_wgt => :weight)

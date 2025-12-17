@@ -26,15 +26,13 @@ end
 
 
 function eff_tenure!(eff::DataFrame)
-    eff.h_tenure = map(eff.pr_tenure, eff.head) do val, head
-        if !head
-            return NoHead
-        elseif val == 1
-            return Renter
+    eff.h_tenure = map(eff.pr_tenure) do val
+        if val == 1
+            return :renter
         elseif val == 2
-            return Owner
+            return :owner
         elseif val == 3
-            return NoTenure
+            return :notenure
         else
             return missing
         end
