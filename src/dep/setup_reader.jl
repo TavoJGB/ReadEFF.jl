@@ -24,7 +24,26 @@ function postprocess(df_ii::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars
     sort!(ii_final, i_ids)
     sort!(hh_final, h_ids)
 
+    # Keep only the actual individuals in each household
+    # - Size of household
+    leftjoin!(ii_final, select(hh_final, [h_ids; :h_size]), on=h_ids)
+    # - Remove empty observations
+    filter!(row -> row.individual <= row.h_size, ii_final)
+    # - Remove Missing type from columns that no longer have missing values
+    for col in names(ii_final)
+        if !any(ismissing, ii_final[!, col])
+            ii_final[!, col] = disallowmissing(ii_final[!, col])
+        end
+    end
+    for col in names(hh_final)
+        if !any(ismissing, hh_final[!, col])
+            hh_final[!, col] = disallowmissing(hh_final[!, col])
+        end
+    end
+
     # Additional variables
+    # - Age
+    compute_age_if_missing!(ii_final)
     # - Head of household
     head = (ii_final.rel2hh .== 1)
     ii_final[!, :head] = ifelse.(ismissing.(head), false, head)
@@ -32,12 +51,6 @@ function postprocess(df_ii::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars
         ii_final[(ii_final.year.==2022) .& (ii_final.hid.==3671) .& (ii_final.individual.==3), :head] .= false
         ii_final[(ii_final.year.==2022) .& (ii_final.hid.==3671) .& (ii_final.individual.==3), :rel2hh] .= missing
     end
-    # - Size of household
-    leftjoin!(ii_final, select(hh_final, [h_ids; :h_size]), on=h_ids)
-    # - Remove empty observations
-    filter!(row -> row.individual <= row.h_size, ii_final)
-    # - Age
-    compute_age_if_missing!(ii_final)
     # - Individual identifier
     ii_final[!, :id] = ii_final.hid .* 10 .+ ii_final.individual
     # - Net wealth
