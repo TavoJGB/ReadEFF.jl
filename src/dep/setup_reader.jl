@@ -72,6 +72,6 @@ end
 
 # Read EFF
 read_eff(datadir::String, identifier_ranges; kwargs...) = read_database(
-    datadir, identifier_ranges, get_household_id_var; filefinder, preprocess, postprocess,
-    get_current_variables, kwargs...
+    datadir, identifier_ranges, get_household_id_var;
+    filefinder, preprocess, postprocess, kwargs...
 )

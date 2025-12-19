@@ -5,14 +5,6 @@ filefinder(dir::String; year::Int, imputation::Int) = [
     joinpath(dir, "other_sections_$(year)_imp$(imputation).csv")
 ]
 
-function get_current_variables(varlist; year::Int, kwargs...)
-    # Filter rows valid for this year
-    valid_rows = (varlist.firsttime .<= year) .& (varlist.lasttime .>= year)
-    
-    # Create mapping: standardized name => EFF column name
-    return Dict(zip(varlist[valid_rows, :varkey], varlist[valid_rows, :varname]))
-end
-
 
 function compute_age_if_missing!(eff_ii::DataFrame)
     if "age" in names(eff_ii)
