@@ -65,6 +65,10 @@ function postprocess(df_ii::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars
     # Weights PROVISIONAL
     rename!(hh_final, :c_wgt => :weight)
 
+    # Correction: survey asks about previous year
+    ii_final[!, :year] .-= 1
+    hh_final[!, :year] .-= 1
+
     # Return
     return ii_final, hh_final
 end
