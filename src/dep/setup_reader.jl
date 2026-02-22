@@ -1,17 +1,31 @@
-function preprocess(ivars, hvars)
+function preprocess(vars)
     # Add variables needed to compute net wealth
+    aux_hvars = filter(:level => ( h -> (h=="household") ), vars)
     wealthlist_path = joinpath(BASE_FOLDER, "var_lists", "eff_vars_wealth.csv")
-    wealthlist = filter(:varkey => key -> !(key ∈ hvars.varkey), CSV.read(wealthlist_path, DataFrame; comment="#"))
+    wealthlist = filter(:varkey => key -> !(key ∈ aux_hvars.varkey), CSV.read(wealthlist_path, DataFrame; comment="#"))
     # Flag auxiliary variables
-    ivars.type .= "User"
-    hvars.type .= "User"
+    vars.type .= "User"
+    wealthlist.level .= "household"
     wealthlist.type .= "Internal"
     # Return updated lists
-    return ivars, vcat(hvars, wealthlist)
+    return vcat(vars, wealthlist)
 end
 
-function postprocess(df_ii::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars::DataFrame)
-    
+function postprocess(df_ii_wide::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars::DataFrame)
+
+    c_ivars, c_hvars = let
+        year = df_ii_wide.year |> unique |> only
+        DataReader.get_current_variables(ivars; year), DataReader.get_current_variables(hvars; year)
+    end
+
+    # Reshape individual dataframe from wide to long
+    id_vars = [:year, :imputation, :hid]
+    df_ii = DataReader.pivot_longer(df_ii_wide, id_vars, c_ivars)
+
+    # Rename variables
+    rename!(df_ii, c_ivars)
+    rename!(df_hh, c_hvars)
+
     # Auxiliary
     h_ids = [:year; :hid; :imputation]
     i_ids = [h_ids; :individual]
@@ -75,7 +89,7 @@ end
 
 
 # Read EFF
-read_eff(datadir::String, identifier_ranges; kwargs...) = read_database(
+read_eff(datadir::String, identifier_ranges; kwargs...) = read_multilevel_database(
     datadir, identifier_ranges, get_household_id_var;
-    filefinder, preprocess, postprocess, kwargs...
+    filefinder, preprocess, postprocess, do_rename=false, kwargs...
 )

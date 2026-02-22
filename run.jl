@@ -7,5 +7,5 @@ datadir = joinpath(pwd(), "..", "..", "IWD_GFC", "HousingEmpirics", "data", "eff
 # Read EFF data
 eff_ii, eff_hh = read_eff(
     datadir, identifier_ranges;
-    varlists_dir="var_lists", i_list_filename="example_vars_ii.csv", h_list_filename="example_vars_hh.csv"
+    varlists_dir="var_lists", varlist_filename="eff_vars.csv"
 )

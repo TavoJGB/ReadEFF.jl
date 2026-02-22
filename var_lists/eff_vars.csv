@@ -1,0 +1,15 @@
+varname,varkey,firsttime,lasttime,level
+
+# Individual variables
+rel2hh,p1_3,2002,2099,individual
+birthyear,p1_2b,2002,2099,individual
+age,p1_2d,2008,2099,individual
+gender,p1_1,2002,2099,individual
+educ,p1_5,2002,2099,individual
+lab_income_direct,p6_64,2002,2099,individual
+lab_income_inkind,p6_66,2002,2099,individual
+
+# Household variables
+c_wgt,facine3,2002,2099,household
+h_size,p1,2002,2099,household
+income,renthog,2002,2099,household
