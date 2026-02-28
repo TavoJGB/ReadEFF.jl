@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/TavoJGB/ReadEFF.jl/actions/workflows/CI.yml/badge.svg?branch=)](https://github.com/TavoJGB/ReadEFF.jl/actions/workflows/CI.yml?query=branch%3A)
 
-**ReadEFF.jl** es un paquete de Julia diseñado para leer y procesar datos de la Encuesta Financiera de las Familias (EFF) del Banco de España. El paquete utiliza [DataReader.jl](https://github.com/TavoJGB/DataReader.jl) para manejar la lectura de datos multinivel (hogares e individuos) y la gestión de variables que cambian de nombre a través de diferentes oleadas de la encuesta.
+**ReadEFF.jl** es un paquete de Julia diseñado para leer y procesar datos de la Encuesta Financiera de las Familias (EFF) del Banco de España. El paquete utiliza [DataReader.jl](https://github.com/TavoJGB/DataReader.jl) para manejar la lectura de datos multinivel (hogares e individuos).
 
 ## Instalación
 
@@ -13,6 +13,8 @@ Pkg.add(url="https://github.com/TavoJGB/ReadEFF.jl")
 ```
 
 ## Uso Básico
+
+En el directorio de datos, es necesario añadir una varlist, que es un archivo CSV que indica a DataReader qué variables extraer.
 
 ```julia
 using ReadEFF
@@ -33,7 +35,7 @@ eff_ii, eff_hh = read_eff(
 
 ### Parámetros
 
-- **`datadir`**: Directorio que contiene los archivos CSV de la EFF (formato: `section6_YYYY_impN.csv` y `other_sections_YYYY_impN.csv`)
+- **`datadir`**: Directorio que contiene los archivos CSV de la EFF. Por defecto, el formato de nombre es: `section6_YYYY_impN.csv` y `other_sections_YYYY_impN.csv`. Sin embargo, se puede cambiar proporcionando un `filefinder`.
 - **`identifier_ranges`**: Named tuple que especifica:
   - `year`: Vector de años a leer (ej. `[2002, 2005, 2008, ..., 2022]`)
   - `imputation`: Rango de imputaciones (típicamente `1:5` para las 5 imputaciones de la EFF)
@@ -48,16 +50,18 @@ eff_ii, eff_hh = read_eff(
 La función `read_eff` devuelve dos DataFrames:
 
 - **`eff_ii`**: DataFrame con datos a nivel **individual** (un registro por persona)
-  - Incluye identificadores: `year`, `hid` (household ID), `imputation`, `individual`
+  - Incluye identificadores: `year`, `hid` (identificador de hogar), `imputation`, `id` (identificador de individuo)
   - Variables calculadas: `head` (indicador de cabeza de familia), `age` (calculada a partir del año de nacimiento si falta)
   - Variables individuales por defecto en la varlist: `rel2hh`, `birthyear`, `age`, `gender`, `educ`, `lab_income_direct`, `lab_income_inkind`
-  - Cualquier variable individual adicional incluida en la varlist.
+  - El usuario puede proporcionar una varlist diferente.
+  - Las variables calculadas se pueden ajustar por el usuario con `postprocess`.
 
 - **`eff_hh`**: DataFrame con datos a nivel **hogar** (un registro por hogar)
   - Incluye identificadores: `year`, `hid`, `imputation`
   - Variables calculadas: `wealth` (riqueza neta), `h_tenure` (régimen de tenencia de vivienda), `weight` (peso muestral)
   - Variables del hogar por defecto en la varlist: `h_size`, `income`
-  - Cualquier variable del hogar adicional incluida en la varlist.
+  - El usuario puede proporcionar una varlist diferente.
+  - Las variables calculadas se pueden ajustar por el usuario con `postprocess`.
 
 ## ¿Cómo Funciona el Sistema de Lectura?
 
@@ -65,7 +69,7 @@ La función `read_eff` devuelve dos DataFrames:
 
 **DataReader.jl** es la librería subyacente que proporciona la funcionalidad genérica para leer bases de datos con:
 - **Estructura multinivel** (individuos dentro de hogares)
-- **Variables que cambian de nombre** entre oleadas de la encuesta
+- **Variables que cambian de nombre** entre oleadas de la encuesta o que no están disponibles en todas las oleadas
 - **Múltiples archivos** por período (la EFF divide sus datos en varios archivos CSV)
 
 ReadEFF.jl configura DataReader.jl con las especificaciones concretas de la EFF mediante:
@@ -81,8 +85,8 @@ Este archivo define **qué variables quieres leer** de la EFF. Contiene columnas
 
 - **`varname`**: Nombre que tendrá la variable en el DataFrame final (ej. `age`, `income`, `educ`)
 - **`varkey`**: Código original de la variable en la EFF (ej. `p1_2d`, `renthog`, `p1_5`)
-- **`firsttime`**: Primer año en que aparece esta variable
-- **`lasttime`**: Último año en que aparece esta variable
+- **`firsttime`**: Primer año en que aparece esta variable. En `preprocess`, permite identificar qué variables están disponibles en una oleada determinada.
+- **`lasttime`**: Último año en que aparece esta variable. En `preprocess`, permite identificar qué variables están disponibles en una oleada determinada.
 - **`level`**: Nivel de la variable (`individual` o `household`)
 
 **Ejemplo:**
@@ -92,11 +96,6 @@ age,p1_2d,2008,2099,individual
 income,renthog,2002,2099,household
 educ,p1_5,2002,2099,individual
 ```
-
-**¿Por qué es necesario?**: Las variables de la EFF cambian de código entre oleadas. Por ejemplo:
-- La edad puede estar codificada como `p1_2d` en unos años y de otra forma en otros
-- Este archivo permite mapear consistentemente los códigos originales a nombres intuitivos
-- DataReader.jl usa esta información para buscar automáticamente el código correcto según el año
 
 #### 2. `eff_vars_wealth.csv` - Variables Auxiliares para Cálculo de Riqueza
 
@@ -214,10 +213,6 @@ eff_ii, eff_hh = read_eff(
     postprocess=my_postprocess
 )
 ```
-
-Las firmas por defecto son:
-- `preprocess(vars::DataFrame) -> DataFrame`
-- `postprocess(df_ii_wide::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars::DataFrame) -> (DataFrame, DataFrame)`
 
 ## Soporte
 

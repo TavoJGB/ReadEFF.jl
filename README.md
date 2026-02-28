@@ -74,6 +74,11 @@ The `read_eff` function returns two DataFrames:
 - Variables that change names across survey waves or that are not available in all waves.
 - Multiple files per period (each EFF wave is split into 2 CSV files).
 
+ReadEFF.jl configures DataReader.jl with the concrete EFF specifications through:
+1. Custom functions to find the correct files
+2. Data preprocessing and postprocessing
+3. Variable lists in CSV files
+
 ### Varlists (CSV Variable Files)
 
 #### 1. `eff_vars.csv` - User-Requested Variables
