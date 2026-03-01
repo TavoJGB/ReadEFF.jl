@@ -78,6 +78,7 @@ ReadEFF.jl configures DataReader.jl with the concrete EFF specifications through
 1. Custom functions to find the correct files
 2. Data preprocessing and postprocessing
 3. Variable lists in CSV files
+4. `variable_mapper=get_time_filtered_variables` to handle variables that change names or appear/disappear across survey waves
 
 ### Varlists (CSV Variable Files)
 
@@ -87,8 +88,8 @@ This file defines **which variables you want to read** from the EFF. It contains
 
 - **`varname`**: Name that the variable will have in the final DataFrame (e.g., `age`, `income`, `educ`).
 - **`varkey`**: Original variable code in the EFF (e.g., `p1_2d`, `renthog`, `p1_5`).
-- **`firsttime`**: First year this variable appears. In `preprocess`, it allows to identify what variables are available at a given wave.
-- **`lasttime`**: Last year this variable appears. In `preprocess`, it allows to identify what variables are available at a given wave.
+- **`firsttime`**: First year this variable appears. Used by `get_time_filtered_variables` to identify what variables are available at a given wave.
+- **`lasttime`**: Last year this variable appears. Used by `get_time_filtered_variables` to identify what variables are available at a given wave.
 - **`level`**: Variable level (`individual` or `household`).
 
 **Example:**

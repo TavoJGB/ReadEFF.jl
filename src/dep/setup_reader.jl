@@ -15,7 +15,7 @@ function postprocess(df_ii_wide::DataFrame, df_hh::DataFrame, ivars::DataFrame, 
 
     c_ivars, c_hvars = let
         year = df_ii_wide.year |> unique |> only
-        DataReader.get_current_variables(ivars; year), DataReader.get_current_variables(hvars; year)
+        DataReader.get_time_filtered_variables(ivars; year), DataReader.get_time_filtered_variables(hvars; year)
     end
 
     # Reshape individual dataframe from wide to long
@@ -91,5 +91,6 @@ end
 # Read EFF
 read_eff(datadir::String, identifier_ranges; kwargs...) = read_multilevel_database(
     datadir, identifier_ranges, get_household_id_var;
-    filefinder, preprocess, postprocess, do_rename=false, kwargs...
+    filefinder, preprocess, postprocess, do_rename=false,
+    variable_mapper=DataReader.get_time_filtered_variables, kwargs...
 )
