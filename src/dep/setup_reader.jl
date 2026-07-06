@@ -13,8 +13,8 @@ end
 
 function postprocess(df_ii_wide::DataFrame, df_hh::DataFrame, ivars::DataFrame, hvars::DataFrame)
 
+    year = df_ii_wide.year |> unique |> only
     c_ivars, c_hvars = let
-        year = df_ii_wide.year |> unique |> only
         DataReader.get_time_filtered_variables(ivars; year), DataReader.get_time_filtered_variables(hvars; year)
     end
 
@@ -72,9 +72,19 @@ function postprocess(df_ii_wide::DataFrame, df_hh::DataFrame, ivars::DataFrame, 
     # - Housing tenure
     eff_tenure!(hh_final)
     
-    # Keep only requested variables
-    select!(ii_final, [string.(i_ids); "head"; filter(:type => t -> t == "User", ivars).varname])
-    select!(hh_final, [string.(h_ids); "h_tenure"; "wealth" ; filter(:type => t -> t == "User", hvars).varname])
+    # Keep only requested variables (filtered by year, with unique varnames)
+    ii_user_vars = DataReader.get_selected_varnames(
+        filter(:type => t -> t == "User", ivars);
+        variable_mapper=DataReader.get_time_filtered_variables,
+        year
+    )
+    hh_user_vars = DataReader.get_selected_varnames(
+        filter(:type => t -> t == "User", hvars);
+        variable_mapper=DataReader.get_time_filtered_variables,
+        year
+    )
+    select!(ii_final, [string.(i_ids); "head"; ii_user_vars])
+    select!(hh_final, [string.(h_ids); "h_tenure"; "wealth" ; hh_user_vars])
 
     # Weights PROVISIONAL
     rename!(hh_final, :c_wgt => :weight)
