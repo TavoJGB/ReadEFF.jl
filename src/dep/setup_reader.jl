@@ -83,7 +83,7 @@ function postprocess(df_ii_wide::DataFrame, df_hh::DataFrame, ivars::DataFrame, 
         variable_mapper=DataReader.get_time_filtered_variables,
         year
     )
-    select!(ii_final, [string.(i_ids); "head"; ii_user_vars])
+    select!(ii_final, [string.(i_ids); "head"; "age"; ii_user_vars])
     select!(hh_final, [string.(h_ids); "h_tenure"; "wealth" ; hh_user_vars])
 
     # Weights PROVISIONAL
