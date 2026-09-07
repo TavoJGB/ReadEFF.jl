@@ -8,6 +8,9 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataReader = "a0aff591-8b5e-472e-9d15-fd720d7e0df8"
 
+[sources]
+DataReader = {url = "https://github.com/TavoJGB/DataReader.jl", rev = "main"}
+
 [compat]
 CSV = "0.10.15"
 DataFrames = "1.8.1"
