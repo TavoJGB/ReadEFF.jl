@@ -11,6 +11,29 @@ function preprocess(vars)
     return vcat(vars, wealthlist)
 end
 
+function _ensure_internal_wealth_aliases!(df::DataFrame, vars::DataFrame)
+    wealthlist_path = joinpath(BASE_FOLDER, "var_lists", "eff_vars_wealth.csv")
+    wealthlist = CSV.read(wealthlist_path, DataFrame; comment="#")
+
+    # If a required internal wealth variable is missing by its canonical name,
+    # recover it from any user-selected alias sharing the same varkey.
+    for row in eachrow(wealthlist)
+        canonical = Symbol(row.varname)
+        canonical in propertynames(df) && continue
+
+        candidate_names = vars.varname[vars.varkey .== row.varkey]
+        for candidate in candidate_names
+            candidate_sym = Symbol(candidate)
+            if candidate_sym in propertynames(df)
+                df[!, canonical] = df[!, candidate_sym]
+                break
+            end
+        end
+    end
+
+    return nothing
+end
+
 _normalize_level_name(level::AbstractString) = Symbol(replace(lowercase(strip(level)), " " => "_", "-" => "_"))
 
 function _get_level_name(varlist::DataFrame)
@@ -120,6 +143,12 @@ function postprocess(args...)
     # Specific logic: household level
     if haskey(processed, :household)
         hh_final = processed[:household]
+
+        household_idx = findfirst(==( :household), level_order)
+        if !isnothing(household_idx)
+            _ensure_internal_wealth_aliases!(hh_final, varlists[household_idx])
+        end
+
         compute_net_wealth!(hh_final)
         eff_tenure!(hh_final)
 
