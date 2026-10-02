@@ -47,7 +47,9 @@ eff_ii, eff_hh = read_eff(
 
 ### Valores Devueltos
 
-La función `read_eff` devuelve dos DataFrames:
+La función `read_eff` devuelve un DataFrame por cada nivel incluido en tu varlist, en el mismo orden de niveles.
+
+Caso habitual (`individual` + `household`):
 
 - **`eff_ii`**: DataFrame con datos a nivel **individual** (un registro por persona)
   - Incluye identificadores: `year`, `hid` (identificador de hogar), `imputation`, `id` (identificador de individuo)
@@ -62,6 +64,15 @@ La función `read_eff` devuelve dos DataFrames:
   - Variables del hogar por defecto en la varlist: `h_size`, `income`
   - El usuario puede proporcionar una varlist diferente.
   - Las variables calculadas se pueden ajustar por el usuario con `postprocess`.
+
+Si la varlist incluye niveles adicionales (por ejemplo `real estate`), `read_eff` devolverá DataFrames adicionales. Por ejemplo:
+
+```julia
+eff_ii, eff_hh, eff_re = read_eff(
+    datadir, identifier_ranges;
+    varlists_dir="var_lists", varlist_filename="eff_vars_ex2.csv"
+)
+```
 
 ## ¿Cómo Funciona el Sistema de Lectura?
 
