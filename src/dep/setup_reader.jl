@@ -187,10 +187,6 @@ function postprocess(args...)
         # Remove Missing type from columns that no longer have missing values
         _drop_missing_type_if_possible!(level_df)
 
-        if :year in names(level_df)
-            level_df[!, :year] .-= 1
-        end
-
         processed[level] = level_df
     end
 
