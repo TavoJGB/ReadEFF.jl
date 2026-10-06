@@ -172,7 +172,7 @@ function postprocess(args...)
             year
         )
         computed_vars = level == :individual ? ["head", "age", "id"] :
-                        level == :household ? ["h_tenure", "wealth", "weight"] :
+                        level == :household ? ["h_tenure", "wealth", "assets", "debts", "weight"] :
                         String[]
         keep_cols = unique([string.(ids_by_level[level]); computed_vars; user_vars])
         keep_cols = filter(col -> col in names(level_df), keep_cols)
